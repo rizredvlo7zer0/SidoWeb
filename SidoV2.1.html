@@ -1,3 +1,4 @@
+
   <br>
   <input placeholder="Nomor Msisdn" type="number" id="myInput">
   <br>
@@ -284,36 +285,43 @@ button svg {
 
 <script>
 window.onload = function() {
-    document.getElementById("myBtn").addEventListener("click", function() {
-        document.getElementById("loading-dots").style.display = "inline-block"; // Show the loading dots
+  document.getElementById("myBtn").addEventListener("click", function() {
+    document.getElementById("loading-dots").style.display = "inline-block"; // Show the loading dots
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                let response = JSON.parse(this.responseText);
-                let data = response.data.hasil;
-                document.getElementById("demo").innerHTML = formatOutput(data);
-                document.getElementById("loading-dots").style.display = "none"; // Hide the loading dots
-            }
-        };
-        xhttp.open("GET", "https://api.khfy-store.com:8443/api-xl-v2/cek_kuota_api?msisdn=" + document.getElementById("myInput").value, true);
-        xhttp.send();
-    });
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        let response = JSON.parse(this.responseText);
+        let data = response.data.hasil;
+        document.getElementById("demo").innerHTML = formatOutput(data);
+        document.getElementById("loading-dots").style.display = "none"; // Hide the loading dots
+      } else if (this.readyState == 4) {
+        toastr.error('Terjadi kesalahan. Silakan coba lagi!');
+        document.getElementById("loading-dots").style.display = "none"; // Hide the loading dots
+      }
+    };
+    xhttp.open("GET", "https://apigw.kmsp-store.com/sidompul/v2/cek_kuota?msisdn=" + document.getElementById("myInput").value + "&isJSON=true", true);
+    xhttp.setRequestHeader('Authorization', 'Basic c2lkb21wdWxhcGk6YXBpZ3drbXNw');
+    xhttp.setRequestHeader('X-API-Key', '6fb99971-2a2f-40ed-815d-a64df9f3c975');
+    xhttp.setRequestHeader('X-App-Version', '2.0.0');
+    xhttp.send();
+  });
 };
 
 function formatOutput(data) {
-    let lines = data.split('\n');
-    let formatted = lines.map(line => {
-        if (line.startsWith('MSISDN')) return `<strong>${line}</strong>`;
-        if (line.startsWith('Tipe')) return `<strong>${line}</strong>`;
-        if (line.startsWith('Masa Aktif')) return `<strong>${line}</strong>`;
-        if (line.startsWith('Lokasi')) return `<strong>${line}</strong>`;
-        if (line.startsWith('📦 Paket')) return `<span style="color:blue;">${line}</span>`;
-        if (line.startsWith('📅 Expired')) return `<span style="color:red;">${line}</span>`;
-        if (line.startsWith('🎁 benefits')) return `<span style="color:green;">${line}</span>`;
-        if (line.startsWith('💽 Kuota')) return `<span style="color:orange;">${line}</span>`;
-        if (line.startsWith('📊 Sisa Kuota')) return `<span style="color:purple;">${line}</span>`;
-        return line;
-    }).join('<br>');
-    return formatted;
-}</script>
+  let lines = data.split('\n');
+  let formatted = lines.map(line => {
+    if (line.startsWith('MSISDN')) return `<strong>${line}</strong>`;
+    if (line.startsWith('Tipe')) return `<strong>${line}</strong>`;
+    if (line.startsWith('Masa Aktif')) return `<strong>${line}</strong>`;
+    if (line.startsWith('Lokasi')) return `<strong>${line}</strong>`;
+    if (line.startsWith('📦 Paket')) return `<span style="color:blue;">${line}</span>`;
+    if (line.startsWith('📅 Expired')) return `<span style="color:red;">${line}</span>`;
+    if (line.startsWith('🎁 benefits')) return `<span style="color:green;">${line}</span>`;
+    if (line.startsWith('💽 Kuota')) return `<span style="color:orange;">${line}</span>`;
+    if (line.startsWith('📊 Sisa Kuota')) return `<span style="color:purple;">${line}</span>`;
+    return line;
+  }).join('');
+  return formatted;
+}
+</script>
