@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Sidompul Cek Kuota Xl Axis</title>
+    <title>Sidompul Cek Kuota XL Axis</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -37,16 +36,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Menggunakan min-height agar sesuai dengan isi halaman */
+            min-height: 100vh;
         }
         .container {
-            margin-top: 20px; /* Mengurangi margin atas agar tidak terlalu jauh dari atas */
+            margin-top: 20px;
             margin-bottom: 50px;
             padding: 20px;
             background: #cfe4e5;
             border-radius: 8px;
-            transition: transform *0.3s ease-in-out;
-            max-width: 90%; /* Menggunakan max-width agar tidak terlalu lebar */
+            transition: transform 0.3s ease-in-out;
+            max-width: 90%;
         }
         .container:hover {
             transform: *scale(1.05);
@@ -60,7 +59,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin-top: 20px; /* Mengatur margin atas */
+            margin-top: 20px;
         }
         .alert {
             background: #f1f1f1;
@@ -86,19 +85,19 @@
             padding: 10px 20px;
             color: black;
             cursor: pointer;
-            outline : none;
+            outline: none;
             transition: background 0.3s ease-in-out;
         }
         .btn-primary:hover {
             background: linear-gradient(135deg, #fff, #fff);
             color: black;
-            outline : none;
+            outline: none;
         }
         #cover-spin {
             position: fixed;
             width: 100%;
             left: 0; right: 0; top: 0; bottom: 0;
-            background-color: rgba*(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.7);
             z-index: 9999;
             display: none;
         }
@@ -112,7 +111,7 @@
         }
         #cover-spin::after {
             content: '';
-            display: *block;
+            display: block;
             position: absolute;
             left: 50%;
             top: 50%;
@@ -134,7 +133,7 @@
 <div class="container atur1">
     <center>
         <h3>CEK KUOTA XL AXIS</h3>
-        <b>By Riz</b>
+        <b>Bʏ Rɪᴢ</b>
     </center>
     <br>
     <div class="alert alert-success">
@@ -154,49 +153,48 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        const coverSpin = document.getElementById('cover-spin');
-        const submitCekKuota = document.getElementById('submitCekKuota');
-        const msisdnInput = document.getElementById('msisdn');
-        const hasilnya = document.getElementById('hasilnya');
+<script>
+    window.onload = function() {
+        document.getElementById("submitCekKuota").addEventListener("click", function() {
+            document.getElementById("cover-spin").style.display = "block";
 
-        function cekKuota() {
-            const msisdn = msisdnInput.value;
-            if (!msisdn) return;
-            coverSpin.style.display = 'block';
-
-            fetch(`https://api.khfy-store.com:8443/api-xl-v2/cek_kuota_api?msisdn=${msisdn}`, {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(s => {
-                coverSpin.style.display = 'none';
-                if (s.status === false) {
-                    toastr.error(s.message);
-                    hasilnya.innerHTML = `<br><font style="color: red;"><b>${s.data.keteranganError}</b></font>`;
-                } else if (s.status === true) {
-                    toastr.success(s.message);
-                    hasilnya.innerText = `${s.data.hasil}`;
-                    // Scroll ke atas hasilnya setelah ditampilkan
-                    hasilnya.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let response = JSON.parse(this.responseText);
+                    let data = response.data.hasil;
+                    document.getElementById("packageDetail").innerHTML = formatOutput(data);
+                    document.getElementById("cover-spin").style.display = "none";
+                } else if (this.readyState == 4) {
+                    toastr.error('Terjadi kesalahan. Silakan coba lagi!');
+                    document.getElementById("cover-spin").style.display = "none";
                 }
-            })
-            .catch(error => {
-                coverSpin.style.display = 'none';
-                toastr.error('Terjadi kesalahan. Silakan coba lagi!');
-            });
-        }
-
-        submitCekKuota.addEventListener('click', cekKuota);
-        msisdnInput.addEventListener('keypress', function(e) {
-            if (e.which == 13) {
-                cekKuota();
-            }
+            };
+            xhttp.open("GET", "https://apigw.kmsp-store.com/sidompul/v2/cek_kuota?msisdn=" + document.getElementById("msisdn").value + "&isJSON=true", true);
+            xhttp.setRequestHeader('Authorization', 'Basic c2lkb21wdWxhcGk6YXBpZ3drbXNw');
+            xhttp.setRequestHeader('X-API-Key', '6fb99971-2a2f-40ed-815d-a64df9f3c975');
+            xhttp.setRequestHeader('X-App-Version', '2.0.0');
+            xhttp.send();
         });
-    });
+    };
+
+    function formatOutput(data) {
+        let lines = data.split('\n');
+        let formatted = lines.map(line => {
+            if (line.startsWith('MSISDN')) return `<strong>${line}</strong>`;
+            if (line.startsWith('Tipe')) return `<strong>${line}</strong>`;
+            if (line.startsWith('Masa Aktif')) return `<strong>${line}</strong>`;
+            if (line.startsWith('Lokasi')) return `<strong>${line}</strong>`;
+            if (line.startsWith('📦 Paket')) return `<span style="color:blue;">${line}</span>`;
+            if (line.startsWith('📅 Expired')) return `<span style="color:red;">${line}</span>`;
+            if (line.startsWith('🎁 benefits')) return `<span style="color:green;">${line}</span>`;
+            if (line.startsWith('💽 Kuota')) return `<span style="color:orange;">${line}</span>`;
+            if (line.startsWith('📊 Sisa Kuota')) return `<span style="color:purple;">${line}</span>`;
+            return line;
+        }).join('');
+        return formatted;
+    }
 </script>
 <script src="https://my.kmsp-store.com/assets/toastr.js"></script>
 </body>
 </html>
-
